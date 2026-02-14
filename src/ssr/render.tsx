@@ -1,6 +1,8 @@
 import { renderToString } from 'react-dom/server';
 import { HelmetProvider } from 'react-helmet-async';
-import { StaticRouter } from 'react-router-dom/server';
+// react-router-dom@7.x no longer exports the /server subpath in a way that works with Node ESM "exports".
+// Import server primitives from react-router (installed as a dependency of react-router-dom).
+import { StaticRouter } from 'react-router';
 import AppShell from '../AppShell';
 
 export function render(url: string) {
@@ -28,4 +30,3 @@ export function render(url: string) {
 
   return { html, head };
 }
-
