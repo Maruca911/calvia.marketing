@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { createRoot, hydrateRoot } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
@@ -12,9 +12,5 @@ const app = (
   </StrictMode>
 );
 
-// Support prerendered HTML output in production builds.
-if (container.hasChildNodes()) {
-  hydrateRoot(container, app);
-} else {
-  createRoot(container).render(app);
-}
+// Render client-side. We also generate static HTML pages for crawlers, but we don't rely on hydration matching.
+createRoot(container).render(app);
