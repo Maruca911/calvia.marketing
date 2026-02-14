@@ -2,7 +2,10 @@ import { useState, FormEvent } from 'react';
 import { Mail, MapPin, Phone, MessageCircle } from 'lucide-react';
 import SEO from '../components/SEO';
 import Button from '../components/Button';
-import { supabase } from '../lib/supabase';
+
+function encodeForm(data: Record<string, string>) {
+  return new URLSearchParams(data).toString();
+}
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -19,13 +22,20 @@ export default function Contact() {
     setStatus('loading');
 
     try {
-      const { error } = await supabase.from('contact_submissions').insert({
+      const payload = {
+        'form-name': 'contact',
         name: formData.name,
         email: formData.email,
         subject: formData.subject,
         message: formData.message,
+      };
+
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encodeForm(payload),
       });
-      if (error) throw error;
+
       setStatus('success');
       setStatusMessage('Thank you for your message! We will get back to you soon.');
       setFormData({ name: '', email: '', subject: '', message: '' });
@@ -72,7 +82,21 @@ export default function Contact() {
                 Fill out the form below and we'll get back to you within 24 hours.
               </p>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                name="contact"
+                method="POST"
+                data-netlify="true"
+                data-netlify-honeypot="bot-field"
+                onSubmit={handleSubmit}
+                className="space-y-6"
+              >
+                {/* Netlify Forms: picked up from prerendered HTML */}
+                <input type="hidden" name="form-name" value="contact" />
+                <p className="hidden">
+                  <label>
+                    Don’t fill this out if you’re human: <input name="bot-field" />
+                  </label>
+                </p>
                 <div>
                   <label htmlFor="name" className="block text-sm font-semibold text-neutral-black mb-2">
                     Name *
@@ -80,6 +104,7 @@ export default function Contact() {
                   <input
                     type="text"
                     id="name"
+                    name="name"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -95,6 +120,7 @@ export default function Contact() {
                   <input
                     type="email"
                     id="email"
+                    name="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -110,6 +136,7 @@ export default function Contact() {
                   <input
                     type="text"
                     id="subject"
+                    name="subject"
                     required
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -124,6 +151,7 @@ export default function Contact() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     required
                     rows={6}
                     value={formData.message}
@@ -152,6 +180,14 @@ export default function Contact() {
                     {statusMessage}
                   </p>
                 )}
+
+                <p className="text-xs text-neutral-grey">
+                  By submitting this form you agree to our{' '}
+                  <a href="/privacy" className="font-semibold">
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
               </form>
             </div>
 

@@ -1,21 +1,9 @@
-import { supabase } from './supabase';
-import { seoArticles, localSeoArticles } from './articles/seoArticles';
-import { googleAdsArticles, ppcArticles } from './articles/adsArticles';
-import { socialMediaArticles, contentMarketingArticles } from './articles/socialContentArticles';
-import { brandingArticles } from './articles/brandingArticles';
+import type { QAItem } from './types';
 
-const allArticles = [
-  ...seoArticles,
-  ...localSeoArticles,
-  ...googleAdsArticles,
-  ...ppcArticles,
-  ...socialMediaArticles,
-  ...contentMarketingArticles,
-  ...brandingArticles,
-];
-
-const qaItems = [
+// Public Q&A content for the FAQ page. Keep answers in HTML so we can use rich formatting.
+export const QA_ITEMS: QAItem[] = [
   {
+    id: 'digital-marketing-small-businesses-mallorca',
     question: 'What is digital marketing for small businesses in Mallorca?',
     answer: `<p>Digital marketing for small businesses in Mallorca involves tailored strategies like SEO, Google Ads, and social media to attract local and tourist customers. For instance, a cafe in Santa Ponsa can use "marketing for small businesses mallorca" to rank higher on Google, driving foot traffic and online orders.</p>
 <p><strong>Key benefits include:</strong></p>
@@ -33,11 +21,12 @@ const qaItems = [
 <li>Start with a small Google Ads budget to test campaigns</li>
 <li>Build a consistent social media presence</li>
 </ol>
-<p>For detailed guidance, check our article on <a href="/article/digital-marketing-mallorca-guide">Digital Marketing for Mallorca Businesses</a> or visit <a href="https://calvia.digital" target="_blank">Calvia Digital</a> for personalized strategies.</p>`,
+<p>For detailed guidance, check our article on <a href="/article/digital-marketing-mallorca-guide">Digital Marketing for Mallorca Businesses</a>.</p>`,
     category: 'Digital Marketing',
     order_index: 1,
   },
   {
+    id: 'google-ads-cost-restaurant-mallorca',
     question: 'How much does Google Ads cost for a restaurant in Mallorca?',
     answer: `<p>Google Ads costs for restaurants in Mallorca typically range from €500-2,000/month depending on competition, location, and goals. You control your budget and only pay when someone clicks your ad.</p>
 <p><strong>Cost factors include:</strong></p>
@@ -58,8 +47,9 @@ const qaItems = [
     order_index: 2,
   },
   {
+    id: 'best-social-platforms-mallorca-hotels',
     question: 'What are the best social media platforms for Mallorca hotels?',
-    answer: `<p>Instagram and Facebook are the best platforms for hotels in Mallorca, reaching both tourists planning trips and locals. Instagram excels for visual storytelling (78% of travelers use it for inspiration), while Facebook targets older demographics and enables direct bookings.</p>
+    answer: `<p>Instagram and Facebook are the best platforms for hotels in Mallorca, reaching both tourists planning trips and locals. Instagram excels for visual storytelling, while Facebook targets older demographics and enables direct bookings.</p>
 <p><strong>Instagram strategy for hotels:</strong></p>
 <ul>
 <li>Post stunning property photos showcasing rooms, amenities, and views</li>
@@ -79,6 +69,7 @@ const qaItems = [
     order_index: 3,
   },
   {
+    id: 'how-long-does-seo-take-mallorca',
     question: 'How long does SEO take to work in Mallorca?',
     answer: `<p>SEO typically takes 3-6 months to show initial results in Mallorca, with significant improvements appearing after 6-12 months. The timeline depends on competition, current website status, and strategy execution quality.</p>
 <p><strong>Timeline breakdown:</strong></p>
@@ -102,6 +93,7 @@ const qaItems = [
     order_index: 4,
   },
   {
+    id: 'roi-digital-marketing-mallorca',
     question: 'What is the ROI of digital marketing for Mallorca businesses?',
     answer: `<p>Digital marketing ROI for Mallorca businesses typically ranges from 200-500%, meaning every €1 invested generates €2-5 in revenue. ROI varies by industry, strategy, and execution quality.</p>
 <p><strong>ROI by channel:</strong></p>
@@ -117,12 +109,12 @@ const qaItems = [
 <li><strong>Restaurants:</strong> Google Ads generates €5-10 per €1 spent during peak season</li>
 <li><strong>Hotels:</strong> SEO drives 40-60% of bookings with minimal ongoing cost</li>
 <li><strong>Real Estate:</strong> Facebook Ads generate qualified leads at €15-30 per lead</li>
-</ul>
-<p>Explore our services: <a href="https://calvia.digital" target="_blank">Calvia Digital</a></p>`,
+</ul>`,
     category: 'Digital Marketing',
     order_index: 5,
   },
   {
+    id: 'what-is-ppc-mallorca',
     question: 'What is PPC advertising and how does it work for Mallorca businesses?',
     answer: `<p>PPC (Pay-Per-Click) advertising is a digital marketing model where you pay each time someone clicks on your ad. For Mallorca businesses, PPC provides immediate visibility on Google, Facebook, Instagram, and other platforms.</p>
 <p><strong>How PPC works:</strong></p>
@@ -145,6 +137,7 @@ const qaItems = [
     order_index: 6,
   },
   {
+    id: 'choose-marketing-agency-mallorca',
     question: 'How do I choose the right marketing agency in Mallorca?',
     answer: `<p>Choosing the right marketing agency in Mallorca requires evaluating their local expertise, proven results, and alignment with your business goals.</p>
 <p><strong>Key factors to evaluate:</strong></p>
@@ -162,21 +155,14 @@ const qaItems = [
 <li>What tools and platforms do you use?</li>
 <li>How do you measure and report success?</li>
 <li>What is your contract structure and pricing model?</li>
-</ol>
-<p>Explore professional marketing services at <a href="https://calvia.digital" target="_blank">Calvia Digital</a>.</p>`,
+</ol>`,
     category: 'Digital Marketing',
     order_index: 7,
   },
   {
+    id: 'what-is-local-seo-calvia',
     question: 'What is local SEO and why is it important for Calvià businesses?',
     answer: `<p>Local SEO is the practice of optimizing your online presence to attract customers from specific geographic areas. For businesses in Calvià, local SEO determines whether you appear when nearby customers search for your services.</p>
-<p><strong>Why local SEO matters:</strong></p>
-<ul>
-<li>46% of all Google searches have local intent</li>
-<li>"Near me" searches have grown 500% in recent years</li>
-<li>78% of local mobile searches result in an in-store visit</li>
-<li>Tourists heavily rely on local search to find services</li>
-</ul>
 <p><strong>Key local SEO components:</strong></p>
 <ul>
 <li><strong>Google Business Profile:</strong> Your most important local asset</li>
@@ -190,16 +176,9 @@ const qaItems = [
     order_index: 8,
   },
   {
+    id: 'how-branding-helps-mallorca',
     question: 'How can branding help my Mallorca business stand out?',
     answer: `<p>Strong branding differentiates your Mallorca business from competitors and creates lasting impressions that drive customer loyalty.</p>
-<p><strong>Benefits of professional branding:</strong></p>
-<ul>
-<li><strong>Recognition:</strong> Customers instantly identify your business</li>
-<li><strong>Trust:</strong> Professional branding signals quality and reliability</li>
-<li><strong>Premium positioning:</strong> Strong brands command higher prices</li>
-<li><strong>Customer loyalty:</strong> Emotional connections drive repeat business</li>
-<li><strong>Marketing efficiency:</strong> Consistent branding makes all marketing more effective</li>
-</ul>
 <p><strong>Essential branding elements:</strong></p>
 <ul>
 <li>Logo and visual identity system</li>
@@ -213,6 +192,7 @@ const qaItems = [
     order_index: 9,
   },
   {
+    id: 'content-to-attract-tourists-mallorca',
     question: 'What content should I create to attract tourists to my Mallorca business?',
     answer: `<p>Creating the right content is essential for attracting tourists to your Mallorca business. Travelers research extensively before booking, and your content needs to appear during their planning journey.</p>
 <p><strong>High-performing content types:</strong></p>
@@ -223,62 +203,9 @@ const qaItems = [
 <li><strong>Video content:</strong> Virtual tours and experience highlights</li>
 <li><strong>Visual content:</strong> High-quality photography for Instagram and Pinterest</li>
 </ul>
-<p><strong>Content creation tips:</strong></p>
-<ol>
-<li>Research what tourists search for using Google Keyword Planner</li>
-<li>Create content in English, Spanish, and German</li>
-<li>Publish consistently with a content calendar</li>
-<li>Optimize all content for SEO with relevant keywords</li>
-<li>Distribute across your website, social media, and email</li>
-</ol>
 <p>Read our full guide: <a href="/article/content-marketing-mallorca-tourism">Content Marketing for Mallorca Tourism</a></p>`,
     category: 'Content Marketing',
     order_index: 10,
   },
 ];
 
-export const seedArticles = async () => {
-  const batchSize = 10;
-  const results = [];
-
-  for (let i = 0; i < allArticles.length; i += batchSize) {
-    const batch = allArticles.slice(i, i + batchSize);
-    const { data, error } = await supabase.from('articles').insert(batch);
-
-    if (error) {
-      console.error(`Error seeding articles batch ${i / batchSize + 1}:`, error);
-      results.push({ success: false, error, batch: i / batchSize + 1 });
-    } else {
-      results.push({ success: true, data, batch: i / batchSize + 1 });
-    }
-  }
-
-  const allSuccess = results.every((r) => r.success);
-  return { success: allSuccess, results, totalArticles: allArticles.length };
-};
-
-export const seedQAItems = async () => {
-  try {
-    const { data, error } = await supabase.from('qa_items').insert(qaItems);
-
-    if (error) {
-      console.error('Error seeding Q&A items:', error);
-      return { success: false, error };
-    }
-
-    return { success: true, data };
-  } catch (error) {
-    console.error('Unexpected error seeding Q&A items:', error);
-    return { success: false, error };
-  }
-};
-
-export const seedAll = async () => {
-  const articlesResult = await seedArticles();
-  const qaResult = await seedQAItems();
-
-  return {
-    articles: articlesResult,
-    qa: qaResult,
-  };
-};

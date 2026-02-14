@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://calvia.digital/sitemap.xml
+Sitemap: https://www.calvia.marketing/sitemap.xml

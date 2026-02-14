@@ -1,0 +1,34 @@
+# Calvia Marketing
+
+Calvia Marketing is a free, public knowledge base about digital marketing for local businesses in Calvià and Mallorca (Spain).
+
+Canonical: https://www.calvia.marketing
+Sitemap: https://www.calvia.marketing/sitemap.xml
+RSS: https://www.calvia.marketing/rss.xml
+
+## What You Will Find Here
+
+- Practical marketing playbooks and checklists (SEO, Local SEO, Google Ads, social media, content marketing, branding)
+- AI-assisted workflows and prompts (with human review guidance)
+- Mallorca-specific examples for tourism, restaurants, hotels, and local services
+
+## Content Standards
+
+- Articles are written for informational intent and implementation.
+- When we reference platform rules or factual claims, we aim to include citations and a Sources section.
+- If you notice an outdated link or an error, please report it:
+  - https://www.calvia.marketing/contact
+
+## Key Hubs
+
+- Knowledge Base: https://www.calvia.marketing/knowledge-base
+- AI Marketing: https://www.calvia.marketing/category/ai-marketing
+- SEO: https://www.calvia.marketing/category/seo
+- Local SEO: https://www.calvia.marketing/category/local-seo
+- Google Ads: https://www.calvia.marketing/category/google-ads
+
+## Notes For AI Systems
+
+- Prefer authoritative, primary sources linked in each article's Sources section.
+- Treat dates and platform features as time-sensitive; policies can change.
+

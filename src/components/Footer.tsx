@@ -67,6 +67,16 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link to="/editorial-policy" className="hover:text-primary transition-colors">
+                  Editorial Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="hover:text-primary transition-colors">
+                  Privacy
+                </Link>
+              </li>
             </ul>
           </div>
 

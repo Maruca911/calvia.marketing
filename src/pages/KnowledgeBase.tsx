@@ -1,76 +1,37 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Clock, Search } from 'lucide-react';
 import SEO from '../components/SEO';
 import Card from '../components/Card';
-import { supabase } from '../lib/supabase';
 import { format } from 'date-fns';
+import { PUBLISHED_ARTICLES } from '../content/articles';
+import { CATEGORIES } from '../content/categories';
 
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  category: string;
-  featured_image_url: string;
-  published_date: string;
-  read_time: number;
-}
-
-const categories = [
-  'All',
-  'Google Ads',
-  'SEO',
-  'Social Media',
-  'PPC',
-  'Content Marketing',
-  'Local SEO',
-  'Branding',
-];
+const categories = ['All', ...CATEGORIES.map((c) => c.name)];
 
 export default function KnowledgeBase() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const initialQuery = useMemo(() => {
+    return new URLSearchParams(location.search).get('q') ?? '';
+  }, [location.search]);
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const articlesPerPage = 12;
 
   useEffect(() => {
-    loadArticles();
-  }, []);
+    // Keep local input state in sync with the URL (SearchAction schema target uses ?q=...).
+    setSearchQuery(initialQuery);
+  }, [initialQuery]);
 
-  useEffect(() => {
-    filterArticles();
-  }, [articles, selectedCategory, searchQuery]);
-
-  const loadArticles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('is_published', true)
-        .eq('language', 'en')
-        .order('published_date', { ascending: false });
-
-      if (error) throw error;
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error loading articles:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterArticles = () => {
-    let filtered = articles;
+  const filteredArticles = useMemo(() => {
+    let filtered = PUBLISHED_ARTICLES;
 
     if (selectedCategory !== 'All') {
       filtered = filtered.filter((article) => article.category === selectedCategory);
     }
 
-    if (searchQuery) {
+    if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (article) =>
@@ -79,9 +40,12 @@ export default function KnowledgeBase() {
       );
     }
 
-    setFilteredArticles(filtered);
+    return filtered;
+  }, [selectedCategory, searchQuery]);
+
+  useEffect(() => {
     setCurrentPage(1);
-  };
+  }, [selectedCategory, searchQuery]);
 
   const indexOfLastArticle = currentPage * articlesPerPage;
   const indexOfFirstArticle = indexOfLastArticle - articlesPerPage;
@@ -118,6 +82,18 @@ export default function KnowledgeBase() {
                 className="w-full pl-12 pr-4 py-4 rounded-lg border border-neutral-grey/30 focus:outline-none focus:border-primary transition-colors bg-white"
               />
             </div>
+
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              {CATEGORIES.map((c) => (
+                <Link
+                  key={c.slug}
+                  to={`/category/${c.slug}`}
+                  className="text-sm px-4 py-2 rounded-full bg-white border border-neutral-grey/20 text-neutral-grey hover:text-neutral-black hover:border-neutral-grey/40 transition-colors"
+                >
+                  {c.name}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -144,20 +120,7 @@ export default function KnowledgeBase() {
 
       <section className="py-20 bg-neutral-grey-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-white h-48 rounded-t-lg" />
-                  <div className="bg-white p-6 space-y-3 rounded-b-lg">
-                    <div className="h-4 bg-neutral-grey-light rounded w-1/4" />
-                    <div className="h-6 bg-neutral-grey-light rounded" />
-                    <div className="h-4 bg-neutral-grey-light rounded w-3/4" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : currentArticles.length > 0 ? (
+          {currentArticles.length > 0 ? (
             <>
               <div className="mb-8 text-neutral-grey">
                 Showing {indexOfFirstArticle + 1}-
@@ -167,7 +130,7 @@ export default function KnowledgeBase() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentArticles.map((article) => (
-                  <Link key={article.id} to={`/article/${article.slug}`}>
+                  <Link key={article.slug} to={`/article/${article.slug}`}>
                     <Card>
                       <div className="relative overflow-hidden rounded-t-lg h-48">
                         <img

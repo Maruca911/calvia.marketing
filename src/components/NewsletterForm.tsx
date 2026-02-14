@@ -1,7 +1,10 @@
 import { useState, FormEvent } from 'react';
 import { Mail } from 'lucide-react';
 import Button from './Button';
-import { supabase } from '../lib/supabase';
+
+function encodeForm(data: Record<string, string>) {
+  return new URLSearchParams(data).toString();
+}
 
 interface NewsletterFormProps {
   variant?: 'inline' | 'large';
@@ -33,28 +36,23 @@ export default function NewsletterForm({
     setStatus('loading');
 
     try {
-      const { error } = await supabase.from('subscribers').insert([
-        {
-          email,
-          consent_given: consent,
-          tag: tag || null,
-          status: 'active',
-        },
-      ]);
+      const payload = {
+        'form-name': 'newsletter',
+        email,
+        consent: consent ? 'yes' : 'no',
+        tag: tag || '',
+      };
 
-      if (error) {
-        if (error.code === '23505') {
-          setStatus('error');
-          setMessage('This email is already subscribed.');
-        } else {
-          throw error;
-        }
-      } else {
-        setStatus('success');
-        setMessage('Thank you for subscribing!');
-        setEmail('');
-        setConsent(false);
-      }
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encodeForm(payload),
+      });
+
+      setStatus('success');
+      setMessage('Thank you for subscribing!');
+      setEmail('');
+      setConsent(false);
     } catch (error) {
       setStatus('error');
       setMessage('Something went wrong. Please try again.');
@@ -76,9 +74,25 @@ export default function NewsletterForm({
             Join our newsletter for exclusive insights, strategies, and trends in digital marketing.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            name="newsletter"
+            method="POST"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
+            {/* Netlify Forms: picked up from prerendered HTML */}
+            <input type="hidden" name="form-name" value="newsletter" />
+            <input type="hidden" name="tag" value={tag} />
+            <p className="hidden">
+              <label>
+                Don’t fill this out if you’re human: <input name="bot-field" />
+              </label>
+            </p>
             <input
               type="email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={placeholder}
@@ -89,6 +103,7 @@ export default function NewsletterForm({
             <label className="flex items-start gap-3 text-sm text-left cursor-pointer">
               <input
                 type="checkbox"
+                name="consent"
                 checked={consent}
                 onChange={(e) => setConsent(e.target.checked)}
                 className="mt-1 w-4 h-4 accent-primary cursor-pointer"
@@ -96,7 +111,7 @@ export default function NewsletterForm({
               />
               <span className="text-neutral-grey-dark">
                 I agree to receive marketing emails and understand I can unsubscribe at any time.
-                By subscribing, I accept the privacy policy.
+                By subscribing, I accept the <a href="/privacy" className="font-semibold">privacy policy</a>.
               </span>
             </label>
 
@@ -126,10 +141,25 @@ export default function NewsletterForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form
+      name="newsletter"
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      onSubmit={handleSubmit}
+      className="space-y-3"
+    >
+      <input type="hidden" name="form-name" value="newsletter" />
+      <input type="hidden" name="tag" value={tag} />
+      <p className="hidden">
+        <label>
+          Don’t fill this out if you’re human: <input name="bot-field" />
+        </label>
+      </p>
       <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="email"
+          name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={placeholder}
@@ -148,13 +178,18 @@ export default function NewsletterForm({
       <label className="flex items-start gap-2 text-xs cursor-pointer">
         <input
           type="checkbox"
+          name="consent"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
           className="mt-0.5 w-3 h-3 accent-primary cursor-pointer"
           disabled={status === 'loading'}
         />
         <span className="text-neutral-grey-dark">
-          I agree to receive marketing emails and accept the privacy policy.
+          I agree to receive marketing emails and accept the{' '}
+          <a href="/privacy" className="font-semibold">
+            privacy policy
+          </a>
+          .
         </span>
       </label>
 

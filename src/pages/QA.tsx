@@ -1,60 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
 import SEO from '../components/SEO';
-import { supabase } from '../lib/supabase';
-
-interface QAItem {
-  id: string;
-  question: string;
-  answer: string;
-  category: string;
-}
+import { QA_ITEMS } from '../content/qa';
 
 export default function QA() {
-  const [qaItems, setQaItems] = useState<QAItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<QAItem[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadQAItems();
+  const sortedItems = useMemo(() => {
+    return [...QA_ITEMS].sort((a, b) => a.order_index - b.order_index);
   }, []);
 
-  useEffect(() => {
-    filterItems();
-  }, [qaItems, searchQuery]);
-
-  const loadQAItems = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('qa_items')
-        .select('*')
-        .eq('language', 'en')
-        .order('order_index');
-
-      if (error) throw error;
-      setQaItems(data || []);
-    } catch (error) {
-      console.error('Error loading Q&A items:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterItems = () => {
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      const filtered = qaItems.filter(
-        (item) =>
-          item.question.toLowerCase().includes(query) ||
-          item.answer.toLowerCase().includes(query)
-      );
-      setFilteredItems(filtered);
-    } else {
-      setFilteredItems(qaItems);
-    }
-  };
+  const filteredItems = useMemo(() => {
+    if (!searchQuery.trim()) return sortedItems;
+    const query = searchQuery.toLowerCase();
+    return sortedItems.filter(
+      (item) =>
+        item.question.toLowerCase().includes(query) ||
+        item.answer.toLowerCase().includes(query)
+    );
+  }, [searchQuery, sortedItems]);
 
   const toggleItem = (id: string) => {
     setOpenId(openId === id ? null : id);
@@ -108,13 +73,7 @@ export default function QA() {
             </div>
           </div>
 
-          {loading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-neutral-grey-light h-20 rounded-lg" />
-              ))}
-            </div>
-          ) : filteredItems.length > 0 ? (
+          {filteredItems.length > 0 ? (
             <div className="space-y-4">
               {filteredItems.map((item) => (
                 <div

@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsx scripts/generate-sitemap.ts && vite build",
+    "build": "tsx scripts/generate-sitemap.ts && tsx scripts/generate-rss.ts && vite build && tsx scripts/prerender.ts",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "audit:content": "tsx scripts/content-audit.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.4",
     "aos": "^2.3.4",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.344.0",

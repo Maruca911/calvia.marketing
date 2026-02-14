@@ -1,72 +1,50 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, ArrowRight, TrendingUp } from 'lucide-react';
 import SEO from '../components/SEO';
 import Card from '../components/Card';
 import NewsletterForm from '../components/NewsletterForm';
-import { supabase } from '../lib/supabase';
 import { format } from 'date-fns';
-
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  category: string;
-  featured_image_url: string;
-  published_date: string;
-  read_time: number;
-}
+import { PUBLISHED_ARTICLES } from '../content/articles';
+import { SITE_NAME, SITE_URL } from '../lib/site';
+import { categoryNameToSlug } from '../content/categories';
 
 export default function Homepage() {
-  const [featuredArticles, setFeaturedArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
+  const featuredArticles = PUBLISHED_ARTICLES.slice(0, 6);
 
-  useEffect(() => {
-    loadFeaturedArticles();
-  }, []);
-
-  const loadFeaturedArticles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('is_published', true)
-        .eq('language', 'en')
-        .order('published_date', { ascending: false })
-        .limit(6);
-
-      if (error) throw error;
-      setFeaturedArticles(data || []);
-    } catch (error) {
-      console.error('Error loading articles:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const schema = {
+  const orgSchema = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Calvia Marketing',
-    url: 'https://www.calvia.marketing',
-    logo: 'https://www.calvia.marketing/logo.png',
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/favicon.svg`,
     description:
-      'Expert digital marketing insights and strategies for businesses in Calvià and Mallorca',
+      'Expert digital marketing insights and strategies for businesses in Calvià and Mallorca.',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Calvià',
       addressRegion: 'Mallorca',
       addressCountry: 'ES',
     },
-  };
+  } as const;
+
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_URL}/knowledge-base?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  } as const;
 
   return (
     <>
       <SEO
         title="Calvia Marketing: Expert Digital Marketing Insights for Mallorca Businesses"
         description="Discover expert digital marketing strategies, SEO tips, and PPC insights for businesses in Calvià and Mallorca. Practical guides to grow your online presence."
-        schema={schema}
+        schema={[orgSchema, websiteSchema]}
       />
 
       <section className="relative bg-gradient-to-br from-primary/5 via-white to-accent/5 py-20 md:py-32 overflow-hidden">
@@ -100,7 +78,7 @@ export default function Homepage() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 border-2 border-accent text-accent px-8 py-4 rounded-lg font-semibold hover:bg-accent hover:text-white transition-colors"
               >
-                Get Started with Our Services
+                Optional: Implementation Help
               </a>
             </div>
           </div>
@@ -119,23 +97,10 @@ export default function Homepage() {
             </p>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-neutral-grey-light h-48 rounded-t-lg" />
-                  <div className="p-6 space-y-3">
-                    <div className="h-4 bg-neutral-grey-light rounded w-1/4" />
-                    <div className="h-6 bg-neutral-grey-light rounded" />
-                    <div className="h-4 bg-neutral-grey-light rounded w-3/4" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : featuredArticles.length > 0 ? (
+          {featuredArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredArticles.map((article) => (
-                <Link key={article.id} to={`/article/${article.slug}`}>
+                <Link key={article.slug} to={`/article/${article.slug}`}>
                   <Card>
                     <div className="relative overflow-hidden rounded-t-lg h-48">
                       <img
@@ -162,6 +127,18 @@ export default function Homepage() {
                         {article.title}
                       </h3>
                       <p className="text-neutral-grey line-clamp-3">{article.excerpt}</p>
+                      {categoryNameToSlug(article.category) && (
+                        <p className="mt-4 text-sm text-neutral-grey">
+                          Explore more in{' '}
+                          <Link
+                            to={`/category/${categoryNameToSlug(article.category)}`}
+                            className="font-semibold"
+                          >
+                            {article.category}
+                          </Link>
+                          .
+                        </p>
+                      )}
                     </div>
                   </Card>
                 </Link>
