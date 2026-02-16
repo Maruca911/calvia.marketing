@@ -58,3 +58,6 @@ export function categorySlugToName(slug: string): string | null {
   return match?.name ?? null;
 }
 
+export function getCategoryBySlug(slug: string): Category | undefined {
+  return CATEGORIES.find((c) => c.slug === slug);
+}
